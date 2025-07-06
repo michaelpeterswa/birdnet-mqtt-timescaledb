@@ -9,6 +9,13 @@ import (
 type Config struct {
 	LogLevel string `env:"LOG_LEVEL" envDefault:"error"`
 
+	MQTTAddress  string `env:"MQTT_ADDRESS" envDefault:"tcp://localhost:1883"`
+	MQTTClientID string `env:"MQTT_CLIENT_ID" envDefault:"birdnet-mqtt-timescaledb"`
+	MQTTTopic    string `env:"MQTT_TOPIC" envDefault:"birdnet"`
+	MQTTQoS      byte   `env:"MQTT_QOS" envDefault:"1"`
+
+	TimescaleConnString string `env:"TIMESCALE_CONN_STRING" envDefault:"postgres://postgres:example@timescaledb:5432/postgres?sslmode=disable"`
+
 	MetricsEnabled bool `env:"METRICS_ENABLED" envDefault:"true"`
 	MetricsPort    int  `env:"METRICS_PORT" envDefault:"8081"`
 

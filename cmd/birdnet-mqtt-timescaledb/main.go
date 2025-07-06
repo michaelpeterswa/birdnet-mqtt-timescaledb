@@ -5,11 +5,15 @@ import (
 	"log"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"alpineworks.io/ootel"
-	"github.com/michaelpeterswa/go-start/internal/config"
-	"github.com/michaelpeterswa/go-start/internal/logging"
+	"github.com/michaelpeterswa/birdnet-mqtt-timescaledb/internal/config"
+	"github.com/michaelpeterswa/birdnet-mqtt-timescaledb/internal/logging"
+	"github.com/michaelpeterswa/birdnet-mqtt-timescaledb/internal/mqtt"
+	"github.com/michaelpeterswa/birdnet-mqtt-timescaledb/internal/timescale"
 	"go.opentelemetry.io/contrib/instrumentation/host"
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
 )
@@ -81,5 +85,33 @@ func main() {
 		_ = shutdown(ctx)
 	}()
 
-	<-time.After(2 * time.Minute)
+	mqttClient := mqtt.NewMQTTClient(c.MQTTAddress, c.MQTTClientID)
+	err = mqttClient.Connect()
+	if err != nil {
+		slog.Error("could not connect to mqtt broker", slog.String("error", err.Error()))
+		os.Exit(1)
+	}
+
+	timescaleClient, err := timescale.NewTimescaleClient(ctx, c.TimescaleConnString)
+	if err != nil {
+		slog.Error("could not create timescale client", slog.String("error", err.Error()))
+		os.Exit(1)
+	}
+	defer timescaleClient.Close()
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	processor := mqtt.NewProcessor(mqttClient, timescaleClient, ctx)
+	err = processor.Start(c.MQTTTopic, c.MQTTQoS)
+	if err != nil {
+		slog.Error("could not start processor", slog.String("error", err.Error()))
+		os.Exit(1)
+	}
+
+	slog.Info("birdnet-mqtt-timescaledb started", slog.String("topic", c.MQTTTopic))
+
+	<-sigChan
+	slog.Info("shutdown signal received, disconnecting...")
+	mqttClient.Disconnect()
 }
