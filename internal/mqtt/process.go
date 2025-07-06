@@ -13,13 +13,15 @@ type Processor struct {
 	mqttClient      *MQTTClient
 	timescaleClient *timescale.TimescaleClient
 	ctx             context.Context
+	timezone        string
 }
 
-func NewProcessor(mqttClient *MQTTClient, timescaleClient *timescale.TimescaleClient, ctx context.Context) *Processor {
+func NewProcessor(mqttClient *MQTTClient, timescaleClient *timescale.TimescaleClient, ctx context.Context, timezone string) *Processor {
 	return &Processor{
 		mqttClient:      mqttClient,
 		timescaleClient: timescaleClient,
 		ctx:             ctx,
+		timezone:        timezone,
 	}
 }
 
@@ -34,7 +36,7 @@ func (p *Processor) processMessage(payload []byte) {
 		return
 	}
 
-	event, err := detection.ToBirdDetectionEvent()
+	event, err := detection.ToBirdDetectionEvent(p.timezone)
 	if err != nil {
 		slog.Error("failed to convert bird detection to event", slog.String("error", err.Error()))
 		return

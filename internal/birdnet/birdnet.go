@@ -61,9 +61,14 @@ type BirdDetectionEvent struct {
 	Sensitivity    float64   `json:"Sensitivity"`
 }
 
-func (b *BirdDetection) ToBirdDetectionEvent() (*BirdDetectionEvent, error) {
+func (b *BirdDetection) ToBirdDetectionEvent(timezone string) (*BirdDetectionEvent, error) {
+	loc, err := time.LoadLocation(timezone)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load timezone %s: %w", timezone, err)
+	}
+	
 	timedate := fmt.Sprintf("%s %s", b.Date, b.Time)
-	eventTime, err := time.Parse("2006-01-02 15:04:05", timedate)
+	eventTime, err := time.ParseInLocation("2006-01-02 15:04:05", timedate, loc)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse time: %w", err)
 	}

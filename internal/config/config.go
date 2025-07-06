@@ -21,6 +21,8 @@ type Config struct {
 
 	Local bool `env:"LOCAL" envDefault:"false"`
 
+	Timezone string `env:"TIMEZONE" envDefault:"America/Los_Angeles"`
+
 	TracingEnabled    bool    `env:"TRACING_ENABLED" envDefault:"false"`
 	TracingSampleRate float64 `env:"TRACING_SAMPLERATE" envDefault:"0.01"`
 	TracingService    string  `env:"TRACING_SERVICE" envDefault:"katalog-agent"`
