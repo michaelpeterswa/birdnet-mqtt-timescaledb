@@ -102,7 +102,7 @@ func main() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
-	processor := mqtt.NewProcessor(mqttClient, timescaleClient, ctx)
+	processor := mqtt.NewProcessor(mqttClient, timescaleClient, ctx, c.Timezone)
 	err = processor.Start(c.MQTTTopic, c.MQTTQoS)
 	if err != nil {
 		slog.Error("could not start processor", slog.String("error", err.Error()))
