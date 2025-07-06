@@ -59,7 +59,8 @@ services:
       - ./docker/timescale/migrations:/migrations
     entrypoint: >
       /bin/sh -c 'sleep 5 && migrate -path=/migrations/ -database
-      "postgres://postgres:example@timescaledb:5432/postgres?sslmode=disable" up'
+      "postgres://postgres:example@timescaledb:5432/postgres?sslmode=disable"
+      up'
     depends_on:
       timescaledb:
         condition: service_healthy
