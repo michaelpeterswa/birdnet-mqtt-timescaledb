@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/caarlos0/env/v11"
 )
@@ -9,10 +10,14 @@ import (
 type Config struct {
 	LogLevel string `env:"LOG_LEVEL" envDefault:"error"`
 
-	MQTTAddress  string `env:"MQTT_ADDRESS" envDefault:"tcp://localhost:1883"`
-	MQTTClientID string `env:"MQTT_CLIENT_ID" envDefault:"birdnet-mqtt-timescaledb"`
-	MQTTTopic    string `env:"MQTT_TOPIC" envDefault:"birdnet"`
-	MQTTQoS      byte   `env:"MQTT_QOS" envDefault:"1"`
+	MQTTAddress        string        `env:"MQTT_ADDRESS" envDefault:"tcp://localhost:1883"`
+	MQTTClientID       string        `env:"MQTT_CLIENT_ID" envDefault:"birdnet-mqtt-timescaledb"`
+	MQTTTopic          string        `env:"MQTT_TOPIC" envDefault:"birdnet"`
+	MQTTQoS            byte          `env:"MQTT_QOS" envDefault:"1"`
+	MQTTKeepAlive      time.Duration `env:"MQTT_KEEPALIVE" envDefault:"30s"`
+	MQTTPingTimeout    time.Duration `env:"MQTT_PING_TIMEOUT" envDefault:"10s"`
+	MQTTConnectTimeout time.Duration `env:"MQTT_CONNECT_TIMEOUT" envDefault:"30s"`
+	MQTTCleanSession   bool          `env:"MQTT_CLEAN_SESSION" envDefault:"true"`
 
 	TimescaleConnString string `env:"TIMESCALE_CONN_STRING" envDefault:"postgres://postgres:example@timescaledb:5432/postgres?sslmode=disable"`
 
