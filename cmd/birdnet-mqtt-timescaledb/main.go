@@ -85,7 +85,13 @@ func main() {
 		_ = shutdown(ctx)
 	}()
 
-	mqttClient := mqtt.NewMQTTClient(c.MQTTAddress, c.MQTTClientID)
+	mqttClient := mqtt.NewMQTTClient(c.MQTTAddress,
+		mqtt.WithMQTTClientID(c.MQTTClientID),
+		mqtt.WithMQTTKeepAlive(c.MQTTKeepAlive),
+		mqtt.WithMQTTPingTimeout(c.MQTTPingTimeout),
+		mqtt.WithMQTTConnectTimeout(c.MQTTConnectTimeout),
+		mqtt.WithMQTTCleanSession(c.MQTTCleanSession),
+	)
 	err = mqttClient.Connect()
 	if err != nil {
 		slog.Error("could not connect to mqtt broker", slog.String("error", err.Error()))
