@@ -17,13 +17,20 @@ type BirdImage struct {
 	SourceProvider string    `json:"SourceProvider"`
 }
 
+// BirdSource represents the audio source metadata
+type BirdSource struct {
+	ID          string `json:"id"`
+	SafeString  string `json:"safeString"`
+	DisplayName string `json:"displayName"`
+}
+
 // BirdDetection represents the main bird detection data
 type BirdDetection struct {
 	ID             int        `json:"ID"`
 	SourceNode     string     `json:"SourceNode"`
 	Date           string     `json:"Date"`
 	Time           string     `json:"Time"`
-	Source         string     `json:"Source"`
+	Source         BirdSource `json:"Source"`
 	BeginTime      time.Time  `json:"BeginTime"`
 	EndTime        time.Time  `json:"EndTime"`
 	SpeciesCode    string     `json:"SpeciesCode"`
@@ -76,7 +83,7 @@ func (b *BirdDetection) ToBirdDetectionEvent(timezone string) (*BirdDetectionEve
 	return &BirdDetectionEvent{
 		SourceNode:     b.SourceNode,
 		Time:           eventTime,
-		Source:         b.Source,
+		Source:         b.Source.DisplayName,
 		BeginTime:      b.BeginTime,
 		EndTime:        b.EndTime,
 		SpeciesCode:    b.SpeciesCode,
